@@ -130,7 +130,6 @@ class TransactionSummaryCharts extends React.Component<Props> {
             />
           )}
         </ChartContainer>
-
         <ChartControls>
           <InlineContainer>
             <SectionHeading key="total-heading">{t('Total Transactions')}</SectionHeading>

@@ -192,12 +192,12 @@ const alert = {
     iconColor: colors.red300,
     textLight: colors.red200,
   },
-} as const;
+};
 
 const badge = {
   alpha: {
-    background: `linear-gradient(90deg, ${colors.orange300}, ${colors.orange500})`,
-    indicatorColor: colors.orange400,
+    background: `linear-gradient(90deg, ${colors.red200}, ${colors.red300})`,
+    indicatorColor: colors.red200,
   },
   beta: {
     background: `linear-gradient(90deg, ${colors.pink300}, ${colors.purple300})`,
@@ -261,8 +261,8 @@ const generateButtonTheme = alias => ({
     colorActive: colors.white,
     background: colors.purple300,
     backgroundActive: '#4e3fb4',
-    border: '#3d328e',
-    borderActive: '#352b7b',
+    border: colors.purple300,
+    borderActive: colors.purple300,
     focusShadow: color(colors.purple300).alpha(0.4).string(),
   },
   success: {
@@ -284,8 +284,8 @@ const generateButtonTheme = alias => ({
     focusShadow: color(colors.red300).alpha(0.5).string(),
   },
   link: {
-    color: colors.blue300,
-    colorActive: colors.blue300,
+    color: alias.linkColor,
+    colorActive: alias.linkColor,
     background: 'transparent',
     border: false,
     borderActive: false,
@@ -459,7 +459,7 @@ const commonTheme = {
   },
 
   space: [0, 8, 16, 20, 30],
-} as const;
+};
 
 const darkAliases = {
   bodyBackground: colors.black,

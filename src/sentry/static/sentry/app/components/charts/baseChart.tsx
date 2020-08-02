@@ -11,8 +11,8 @@ import {
   EChartChartReadyHandler,
   EChartDataZoomHandler,
 } from 'app/types/echarts';
+import {Theme} from 'app/utils/theme';
 import space from 'app/styles/space';
-import theme from 'app/utils/theme';
 
 import Grid from './components/grid';
 import Legend from './components/legend';
@@ -67,7 +67,7 @@ type Props = {
    */
   xAxis?: (EChartOption.XAxis & Truncateable) | null;
   /**
-   * Must be explicitly `null` to disable yAxis
+   * Must be explicitly `null` to disable yAxixis
    */
   yAxis?: EChartOption.YAxis;
   /**
@@ -137,7 +137,7 @@ type Props = {
    * theme name
    * example theme: https://github.com/apache/incubator-echarts/blob/master/theme/dark.js
    */
-  theme?: ReactEchartProps['theme'];
+  echartsTheme?: ReactEchartProps['theme'];
   /**
    * states whether or not to merge with previous `option`
    */
@@ -210,6 +210,8 @@ type Props = {
    * Inline styles
    */
   style?: React.CSSProperties;
+
+  theme: Theme;
 };
 
 class BaseChart extends React.Component<Props> {
@@ -260,7 +262,7 @@ class BaseChart extends React.Component<Props> {
   };
 
   getColorPalette() {
-    const {series} = this.props;
+    const {theme, series} = this.props;
 
     const palette = series?.length
       ? theme.charts.getColorPalette(series.length)
@@ -270,7 +272,7 @@ class BaseChart extends React.Component<Props> {
   }
 
   getSeries() {
-    const {previousPeriod, series, transformSinglePointToBar} = this.props;
+    const {previousPeriod, series, theme, transformSinglePointToBar} = this.props;
 
     const hasSinglePoints = (series as EChartOption.SeriesLine[] | undefined)?.every(
       s => Array.isArray(s.data) && s.data.length === 1
@@ -310,6 +312,8 @@ class BaseChart extends React.Component<Props> {
 
   render() {
     const {
+      theme,
+
       options,
       colors,
       grid,
@@ -344,17 +348,19 @@ class BaseChart extends React.Component<Props> {
       onChartReady,
     } = this.props;
 
+    const defaultAxesProps = {theme};
     const yAxisOrCustom = !yAxes
       ? yAxis !== null
-        ? YAxis(yAxis)
+        ? YAxis({theme, ...yAxis})
         : undefined
       : Array.isArray(yAxes)
-      ? yAxes.map(YAxis)
-      : [YAxis(), YAxis()];
+      ? yAxes.map(axis => YAxis({...axis, theme}))
+      : [YAxis(defaultAxesProps), YAxis(defaultAxesProps)];
     const xAxisOrCustom = !xAxes
       ? xAxis !== null
         ? XAxis({
             ...xAxis,
+            theme,
             useShortDate,
             start,
             end,
@@ -365,9 +371,9 @@ class BaseChart extends React.Component<Props> {
         : undefined
       : Array.isArray(xAxes)
       ? xAxes.map(axis =>
-          XAxis({...axis, useShortDate, start, end, period, isGroupedByDate, utc})
+          XAxis({...axis, theme, useShortDate, start, end, period, isGroupedByDate, utc})
         )
-      : [XAxis(), XAxis()];
+      : [XAxis(defaultAxesProps), XAxis(defaultAxesProps)];
 
     // Maybe changing the series type to types/echarts Series[] would be a better solution
     // and can't use ignore for multiline blocks
@@ -384,7 +390,7 @@ class BaseChart extends React.Component<Props> {
           echarts={echarts}
           notMerge={notMerge}
           lazyUpdate={lazyUpdate}
-          theme={this.props.theme}
+          theme={this.props.echartsTheme}
           onChartReady={onChartReady}
           onEvents={this.getEventsMap}
           opts={{
@@ -432,6 +438,8 @@ class BaseChart extends React.Component<Props> {
 // Contains styling for chart elements as we can't easily style those
 // elements directly
 const ChartContainer = styled('div')`
+  background-color: ${p => p.theme.background};
+
   /* Tooltip styling */
   .tooltip-series,
   .tooltip-date {
@@ -482,8 +490,10 @@ const ChartContainer = styled('div')`
   }
 `;
 
+const BaseChartWithTheme = withTheme(BaseChart);
+
 const BaseChartRef = React.forwardRef<ReactEchartsCore, Props>((props, ref) => (
-  <BaseChart forwardedRef={ref} {...props} />
+  <BaseChartWithTheme forwardedRef={ref} {...props} />
 ));
 BaseChartRef.displayName = 'forwardRef(BaseChart)';
 
