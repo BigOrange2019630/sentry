@@ -14,6 +14,8 @@ class RRWebReplayer extends React.Component<Props> {
 
   wrapperRef = React.createRef<HTMLDivElement>();
 
+  newRRWebPlayer: any;
+
   async rrwebPlayer() {
     const element = this.wrapperRef?.current;
 
@@ -26,7 +28,7 @@ class RRWebReplayer extends React.Component<Props> {
     try {
       const resp = await fetch(url);
       const payload = await resp.json();
-      const _ = new rrwebPlayer({
+      this.newRRWebPlayer = new rrwebPlayer({
         target: element,
         autoplay: false,
         data: payload,
