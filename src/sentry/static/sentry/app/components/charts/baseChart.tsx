@@ -1,3 +1,4 @@
+import {withTheme} from 'emotion-theming';
 import React from 'react';
 import 'zrender/lib/svg/svg';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
